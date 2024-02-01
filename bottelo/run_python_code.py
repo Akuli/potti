@@ -16,8 +16,8 @@ def run_python_code(code: str) -> str:
             "run_pyodide.js",
             code,
         ],
-        stderr=subprocess.STDOUT,
+        #stderr=subprocess.STDOUT,
         text=True,
         cwd=Path(__file__).parent.parent,
     )
-    return output
+    return output.replace('\n', ' ').strip()
