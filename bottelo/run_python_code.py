@@ -10,7 +10,7 @@ from pathlib import Path
 # output them as needed.
 class RunnerSpawner:
     def __init__(self) -> None:
-        self.queue: queue.Queue[subprocess.Popen] = queue.Queue(maxsize=1)
+        self.queue: queue.Queue[subprocess.Popen] = queue.Queue(maxsize=5)
         self.stopping = False
         self.thread = threading.Thread(target=self.spawn_more, daemon=True)
         self.thread.start()
@@ -29,7 +29,6 @@ class RunnerSpawner:
                 shell=True,  # ulimit is provided by shell
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
                 text=True,
                 cwd=project_root,
                 env=dict(os.environ) | {"DENO_DIR": str(deno_cache)},
