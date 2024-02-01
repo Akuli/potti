@@ -46,8 +46,16 @@ class RunnerPool:
 
             # Wait until this process has started and is ready to read input
             log.debug(f"new runner pid={process.pid} loading...")
-            line = process.stdout.readline()
-            assert line == "Loaded\n"
+            try:
+                line = process.stdout.readline()
+            except OSError:
+                log.exception(f"loading runner (pid={process.pid}) failed, trying again")
+                continue
+
+            if line != "Loaded\n":
+                log.error(f"new runner (pid={process.pid}) failed to respond with 'Loaded' (got {line!r})")
+                continue
+
             log.debug(f"new runner pid={process.pid} is ready")
 
             if self.stopping:
@@ -80,7 +88,16 @@ class RunnerPool:
             process.wait()
 
     def get_a_process(self) -> subprocess.Popen:
-        return self.queue.get()
+        while True:
+            process = self.queue.get()
+
+            if process.poll() is not None:
+                # it dead
+                log.error(f"runner process pid={process.pid} has died")
+                continue
+
+            # lgtm
+            return process
 
 
 spawner = RunnerPool()
