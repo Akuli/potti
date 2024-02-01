@@ -23,6 +23,7 @@ try {
   try {
     console.log(/\n[^ ][\S\s]*/.exec(e.toString())[0]);
   } catch(e2) {
+    // TODO: when does this happen, if ever?
     console.log(e.toString());
   }
 }
