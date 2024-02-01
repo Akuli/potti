@@ -3,12 +3,16 @@ import os
 import queue
 import subprocess
 import threading
+import logging
 from pathlib import Path
+
+
+log = logging.getLogger(__name__)
 
 
 # Starting a runner is slow. Let's start many of them ahead of time, and
 # output them as needed.
-class RunnerSpawner:
+class RunnerPool:
     def __init__(self) -> None:
         self.queue: queue.Queue[subprocess.Popen] = queue.Queue(maxsize=5)
         self.stopping = False
@@ -22,11 +26,17 @@ class RunnerSpawner:
         deno_cache.mkdir(exist_ok=True)
 
         while not self.stopping:
-            # --allow-read lets pyodide read Python library files.
-            # This is safe, because pyodide has dummy file system anyway. See tests.
             process = subprocess.Popen(
-                "ulimit -v 100000000; timeout 10 deno/deno run --allow-read run_pyodide.js",
-                shell=True,  # ulimit is provided by shell
+                # --allow-read lets pyodide read Python library files.
+                # This is safe, because pyodide has dummy file system anyway. See tests.
+                #
+                # TODO: memory limit
+                [
+                    "deno/deno",
+                    "run",
+                    "--allow-read",
+                    "run_pyodide.js",
+                ],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 text=True,
@@ -34,11 +44,18 @@ class RunnerSpawner:
                 env=dict(os.environ) | {"DENO_DIR": str(deno_cache)},
             )
 
+            # Wait until this process has started and is ready to read input
+            log.debug(f"new runner pid={process.pid} loading...")
+            line = process.stdout.readline()
+            assert line == "Loaded\n"
+            log.debug(f"new runner pid={process.pid} is ready")
+
             if self.stopping:
+                log.debug(f"new runner pid={process.pid} not needed, killing")
                 process.kill()
                 process.wait()
             else:
-                self.queue.put(process)  # will wait if queue is full (maxsize)
+                self.queue.put(process)  # will wait more if queue is full (maxsize)
 
     def stop(self) -> None:
         if self.stopping:
@@ -58,6 +75,7 @@ class RunnerSpawner:
                     # be created.
                     break
 
+            log.debug(f"killing runner pid={process.pid}")
             process.kill()
             process.wait()
 
@@ -65,7 +83,7 @@ class RunnerSpawner:
         return self.queue.get()
 
 
-spawner = RunnerSpawner()
+spawner = RunnerPool()
 atexit.register(spawner.stop)
 
 
@@ -75,8 +93,8 @@ atexit.register(spawner.stop)
 # To run webassembly, I stole some javascript code from pyodide's tests.
 # I am running it with deno because they run it with deno.
 def run_python_code(code: str) -> str:
+    log.info(f"running {code!r}")
     with spawner.get_a_process() as process:
-        process.stdin.write(code)
-        process.stdin.flush()
-        process.stdin.close()
-        return process.stdout.read().replace('\n', ' ').strip()
+        log.debug(f"using runner pid={process.pid}")
+        stdout, stderr = process.communicate(input=code, timeout=0.2)
+        return stdout.replace('\n', ' ').strip()

@@ -1,5 +1,4 @@
-# TODO: SSL aka TLS
-
+import logging
 import socket
 import ssl
 import traceback
@@ -7,6 +6,8 @@ from typing import Union, TypeVar, Callable
 
 import certifi
 
+
+log = logging.getLogger(__name__)
 
 _Socket = Union[socket.socket, ssl.SSLSocket]
 
@@ -64,7 +65,7 @@ class IrcBot:
         self.commands: list[tuple[str, Callable[[str, str, str], str | None]]] = []
 
     def send(self, line: str) -> None:
-        print("send:", line)
+        log.info(f"send: {line}")
         self.sock.sendall(line.encode("utf-8") + b"\r\n")
 
     def run_forever(self) -> None:
@@ -76,12 +77,12 @@ class IrcBot:
                 self.handle_line(line.decode("utf-8").rstrip("\r"))
 
     def handle_line(self, line: str) -> None:
-        print("recv:", line)
+        log.info(f"recv: {line}")
 
         command_or_sender, *args = split_line(line)
         if command_or_sender.startswith(":"):
             if "@" in command_or_sender:
-                sender_nick = command_or_sender.split("!")[0]
+                sender_nick = command_or_sender[1:].split("!")[0]
                 self.handle_message_from_user(sender_nick, args[0], args[1:])
             else:
                 self.handle_message_from_server(args)
@@ -110,15 +111,20 @@ class IrcBot:
                 try:
                     response = callback(sender, recipient, message[len(prefix):].strip())
                 except Exception:
-                    traceback.print_exc()
-                    response = "Error :("
-                if response:
-                    if recipient.startswith('#'):
-                        # Send response to channel
-                        self.send(f"PRIVMSG {recipient} :{response}")
-                    else:
-                        # Send response as DM/PM (Direct/Private Message)
-                        self.send(f"PRIVMSG {sender} :{response}")
+                    log.exception(f"error when handling message {message!r} ({sender} --> {recipient})")
+                    return
+
+                if not response:
+                    return
+
+                if recipient.startswith('#'):
+                    # Send response to channel
+                    self.send(f"PRIVMSG {recipient} :{response}")
+                else:
+                    # Send response as DM/PM (Direct/Private Message)
+                    self.send(f"PRIVMSG {sender} :{response}")
+
+                return
 
     def command(self, prefix: str) -> Callable[[_CommandT], _CommandT]:
         def actually_register(callback: _CommandT) -> _CommandT:

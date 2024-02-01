@@ -6,6 +6,7 @@ const { loadPyodide, toPy } = pyodideModule;
 
 
 const pyodide = await loadPyodide();  // This is really really slow.
+console.log("Loaded");
 
 // Read python code after loading pyodide to work around loading slowness.
 // This way, we can prepare a runners when idle, and have it sit here until it's needed.
