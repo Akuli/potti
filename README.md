@@ -47,7 +47,7 @@ $ mypy potti
 ```
 
 
-## Background / history
+## Background/history/motivation
 
 I've been ocassionally on an IRC channel named `##learnpython` for about 10 years now.
 It is a small community of programmers, and it has gotten smaller over time,
@@ -66,10 +66,11 @@ so I can't legally fork the project, change a few things I find annoying, and ru
 The author of pbot maintains it occasionally, but has left IRC and doesn't want anything to do with IRC.
 He also refused to apply an open-source license when I asked.
 
-So there's two reasons why this project exists:
+So there's several reasons why I wanted to create this project:
 - I like being able to change the bot whenever and however I want,
     especially when it stops working for whatever reason.
 - I want to use open-source software when it is reasonably possible.
+- `pbot` broke randomly (again) a few days ago.
 
 This project works completely differently than pbot, and has nothing copied from pbot.
 I haven't looked at pbot's source code in years,
