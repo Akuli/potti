@@ -35,7 +35,7 @@ $ pip install -r mantaray/requirements.txt
 $ ./download-deno.sh
 ```
 
-Running the bot: (you probably want to modify `potti/__main__.py` to fit your needs)
+Running the bot for local development:
 
 ```
 $ python3 -m potti --launch-server --launch-client

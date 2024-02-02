@@ -1,8 +1,6 @@
-# Integration Test sounds fancy :)
+# If you are obsessed with TDD, you'd probably call this an Integration Test
 
-import os
 import subprocess
-import time
 import sys
 import socket
 

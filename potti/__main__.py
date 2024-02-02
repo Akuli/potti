@@ -37,9 +37,9 @@ def start_mantatail() -> subprocess.Popen[bytes]:
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(prog="python3 -m potti")
 parser.add_argument("--launch-server", action="store_true", help="whether to run Mantaray (GUI)")
-parser.add_argument("--launch-client", action="store_true", help="whether to run MantaTail (IRC server)")
+parser.add_argument("--launch-client", action="store_true", help="whether to run MantaTail (local server)")
 args = parser.parse_args()
 
 server_process = start_mantatail() if args.launch_server else None
@@ -56,7 +56,7 @@ bot = IrcBot(
 
 
 @bot.command("!py")
-def py3(sender: str, recipient: str, code: str) -> str:
+def py_command(sender: str, recipient: str, code: str) -> str:
     try:
         output = run_python_code.run(code)
         if len(output) > 200:
