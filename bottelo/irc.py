@@ -88,7 +88,7 @@ class IrcBot:
                 self.handle_message_from_server(args)
         elif command_or_sender == "PING":
             if args:
-                self.send(f"PONG :{args[1]}")
+                self.send(f"PONG :{args[0]}")
             else:
                 # TODO: does this ever happen?
                 self.send("PONG")
