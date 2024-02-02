@@ -23,7 +23,7 @@ logging.getLogger().addHandler(h)
 
 def set_memory_limit() -> None:
     # https://gist.github.com/s3rvac/f97d6cbdfdb15c0a32e7e941f7f4a3fa
-    max_mem = 1_000_000_000
+    max_mem = 500_000_000
     resource.setrlimit(resource.RLIMIT_DATA, (max_mem, max_mem))
 
 
