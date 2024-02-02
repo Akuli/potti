@@ -26,17 +26,19 @@ crashes with various funny errors when you try to access real operating system f
 Development setup:
 
 ```
+$ git submodule update
 $ python3 -m venv env
 $ source env/bin/activate
 $ pip install -r requirements.txt
 $ pip install -r requirements-dev.txt
+$ pip install -r mantaray/requirements.txt
 $ ./download-deno.sh
 ```
 
 Running the bot: (you probably want to modify `potti/__main__.py` to fit your needs)
 
 ```
-$ python3 -m potti 
+$ python3 -m potti --launch-server --launch-client
 ```
 
 Tests and type checking:

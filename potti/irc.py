@@ -74,6 +74,20 @@ class IrcBot:
             for line in full_lines:
                 self.handle_line(line.decode("utf-8").rstrip("\r"))
 
+    def run_while(self, condition: Callable[[], bool]) -> None:
+        recv_buffer = b""
+        while condition():
+            self.sock.settimeout(0.1)
+            try:
+                recv_buffer += self.sock.recv(1024)
+            except TimeoutError:
+                pass
+            self.sock.settimeout(None)
+
+            *full_lines, recv_buffer = recv_buffer.split(b"\n")
+            for line in full_lines:
+                self.handle_line(line.decode("utf-8").rstrip("\r"))
+
     def handle_line(self, line: str) -> None:
         log.info(f"recv: {line}")
 

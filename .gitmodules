@@ -1,3 +1,6 @@
 [submodule "MantaTail"]
 	path = MantaTail
 	url = https://github.com/ThePhilgrim/MantaTail
+[submodule "mantaray"]
+	path = mantaray
+	url = https://github.com/Akuli/mantaray
