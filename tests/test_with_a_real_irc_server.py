@@ -48,9 +48,6 @@ def client(server):
 
 
 def test_integration(server, bot, client):
-    client = socket.socket()
-    client.connect(('localhost', 6667))
-
     client.sendall(b'NICK client\r\nUSER client 0 * :client\r\nJOIN #a\r\nPRIVMSG #a :!py print(1 + 2)\r\n')
 
     client.settimeout(20)
