@@ -1,0 +1,3 @@
+[submodule "MantaTail"]
+	path = MantaTail
+	url = https://github.com/ThePhilgrim/MantaTail

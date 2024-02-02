@@ -1,7 +1,6 @@
 import logging
 import socket
 import ssl
-import traceback
 from typing import Union, TypeVar, Callable
 
 import certifi

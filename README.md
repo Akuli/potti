@@ -42,6 +42,7 @@ $ python3 -m potti
 Tests and type checking:
 
 ```
+$ git submodule update --init
 $ python3 -m pytest
 $ mypy potti
 ```
