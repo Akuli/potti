@@ -15,6 +15,7 @@ bot = IrcBot(
     use_ssl=False,
     nick="potti",
     channels=["#a"],
+    realname="https://github.com/Akuli/potti",
 )
 
 

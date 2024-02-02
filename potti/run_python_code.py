@@ -10,21 +10,30 @@ import time
 import resource
 import select
 from pathlib import Path
+from typing import IO
 
 
 log = logging.getLogger(__name__)
 
 
-def set_memory_limit():
+def set_memory_limit() -> None:
     # https://gist.github.com/s3rvac/f97d6cbdfdb15c0a32e7e941f7f4a3fa
     max_mem = 200_000_000
     resource.setrlimit(resource.RLIMIT_DATA, (max_mem, max_mem))
 
 
-def kill_process(process: subprocess.Popen) -> None:
+def kill_process(process: subprocess.Popen[bytes]) -> None:
     log.debug(f"killing runner pid={process.pid}")
     process.kill()
     process.wait()  # don't leave a zombie process around
+
+
+# This will wait max 0.1sec for data to become available.
+def read_available_data(file: IO[bytes]) -> bytes:
+    if select.select([file], [], [], 0.1)[0]:
+        return file.read1()  # type: ignore
+    else:
+        return b""
 
 
 # Starting a runner is slow. Let's start many of them ahead of time, and
@@ -32,12 +41,12 @@ def kill_process(process: subprocess.Popen) -> None:
 class RunnerPool:
     def __init__(self) -> None:
         self.project_root = Path(__file__).parent.parent
-        self.queue: queue.Queue[subprocess.Popen] = queue.Queue(maxsize=3)
+        self.queue: queue.Queue[subprocess.Popen[bytes]] = queue.Queue(maxsize=3)
         self.stopping = False
         self.thread = threading.Thread(target=self.spawn_more_until_stopped, daemon=True)
         self.thread.start()
 
-    def spawn_one_new_runner(self) -> subprocess.Popen:
+    def spawn_one_new_runner(self) -> subprocess.Popen[bytes]:
         process = subprocess.Popen(
             # --allow-read lets pyodide read Python library files.
             # This is safe, because pyodide has dummy file system anyway. See tests.
@@ -46,7 +55,7 @@ class RunnerPool:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=self.project_root,
-            env=dict(os.environ) | {"DENO_DIR": str(self.project_root / "deno" / "cache")},
+            env=dict(os.environ) | {"DENO_DIR": "deno/cache"},
             preexec_fn=set_memory_limit,
         )
 
@@ -62,12 +71,9 @@ class RunnerPool:
             while b"\n" not in line and not self.stopping:
                 if time.monotonic() > waited_damn_long_enough:
                     raise ValueError("runner process didn't print anything in 30sec")
-                # Test if process has written something to its stdout.
-                # If it has, read as much as we can of it.
-                # If not, wait max 0.1sec until the stdout becomes readable.
-                # This keeps us checking for stopping frequently enough.
-                if select.select([process.stdout], [], [], 0.1)[0]:
-                    line += process.stdout.read1()
+
+                assert process.stdout is not None  # needed to satisfy mypy
+                line += read_available_data(process.stdout)
 
             # Ignore printed value when stopping. Process will soon be killed.
             if line != b"Loaded\n" and not self.stopping:
@@ -122,7 +128,7 @@ class RunnerPool:
 
             kill_process(process)
 
-    def get_a_process(self) -> subprocess.Popen:
+    def get_a_process(self) -> subprocess.Popen[bytes]:
         while True:
             process = self.queue.get()
 
@@ -139,7 +145,7 @@ pool = RunnerPool()
 atexit.register(pool.stop)
 
 
-def set_non_blocking(file):
+def set_non_blocking(file: IO[bytes]) -> None:
     old_flags = fcntl.fcntl(file.fileno(), fcntl.F_GETFD)
     new_flags = old_flags | os.O_NONBLOCK
     fcntl.fcntl(file, fcntl.F_SETFD, new_flags)
@@ -169,6 +175,9 @@ def run_python_code(code: str) -> str:
         #
         # Apparently this means that the timeout argument is broken in some cases.
 
+        assert process.stdin is not None
+        assert process.stdout is not None
+
         process.stdin.write(code.encode("utf-8"))
         process.stdin.flush()
         process.stdin.close()  # send EOF on stdin
@@ -180,9 +189,7 @@ def run_python_code(code: str) -> str:
         while len(output) < 1000 and process.poll() is None:
             if time.monotonic() > end:
                 return "timed out"
-
-            if select.select([process.stdout], [], [], 0.1)[0]:
-                output += process.stdout.read1()
+            output += read_available_data(process.stdout)
 
         return output.decode("utf-8", errors="replace").replace('\n', ' ').strip()
 

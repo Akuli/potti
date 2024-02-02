@@ -14,9 +14,9 @@ jobs:
         python-version: "3.12"
     - run: pip install -r requirements-dev.txt
     - run: |
-        mypy --platform linux --python-version 3.10 config.py
-        mypy --platform linux --python-version 3.11 config.py
-        mypy --platform linux --python-version 3.12 config.py
+        mypy --strict --platform linux --python-version 3.10 potti
+        mypy --strict --platform linux --python-version 3.11 potti
+        mypy --strict --platform linux --python-version 3.12 potti
 
   pytest:
     timeout-minutes: 10

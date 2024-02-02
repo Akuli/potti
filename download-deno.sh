@@ -13,4 +13,4 @@ rm -v deno-x86_64-unknown-linux-gnu.zip
 # Deno downloads stuff when it runs for the first time. Let's do it now.
 mkdir cache
 cd ..
-echo 'print("Hello World!!!")' | deno/deno run --allow-read run_pyodide.js
+echo 'print("Hello World!!!")' | DENO_DIR=deno/cache deno/deno run --allow-read run_pyodide.js
