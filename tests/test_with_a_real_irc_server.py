@@ -1,4 +1,4 @@
-# Integration Test, sounds fancy :)
+# Integration Test sounds fancy :)
 
 import subprocess
 import time
@@ -14,6 +14,9 @@ def server():
 
     # Wait for server to start
     time.sleep(1)
+
+    # Must be still running
+    assert process.poll() is None
 
     yield
     process.kill()
