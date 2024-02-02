@@ -21,7 +21,9 @@ bot = IrcBot(
 @bot.command("!py3")
 def py3(sender: str, recipient: str, code: str) -> str:
     try:
-        output = run_python_code(code)[:200]
+        output = run_python_code(code)
+        if len(output) > 200:
+            output = output[:200] + " [output truncated]"
     except Exception:
         log.exception(f"running code failed: {code!r}")
         output = "error :("
