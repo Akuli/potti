@@ -32,10 +32,14 @@ def test_infinite_loop_ddos_attack():
 
 
 def test_print_ddos_attack():
+    # It strips a few spaces, and reads chunks of max 100 bytes until length 1000.
+    min_len = 995
+    max_len = 1100
+
     output = run("while True: print('a')")
-    assert 1000 <= len(output) <= 1100
+    assert min_len <= len(output) <= max_len
     assert output.startswith('a a a a a a a a a a a a a a a ')
 
     output = run("while True: print('a', end='', flush=True)")
-    assert 1000 <= len(output) <= 1100
+    assert min_len <= len(output) <= max_len
     assert output.startswith('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
