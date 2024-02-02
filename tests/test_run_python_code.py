@@ -9,6 +9,12 @@ def test_succeeding_codes():
     assert run("3 + 4j") == '(3+4j)'
     assert run("print('x'); print('y'); 'z'") == 'x y z'
 
+    # Built-in module
+    assert run("from math import cos, pi; cos(pi)") == "-1.0"
+
+    # Standard-library module
+    assert run("import logging; logging.getLogger('x').warning('test')") == "WARNING:x:test"
+
 
 def test_errors():
     assert run("print('x'+1)") == 'TypeError: can only concatenate str (not "int") to str'
@@ -43,6 +49,16 @@ def test_print_ddos_attack():
     output = run("while True: print('a', end='', flush=True)")
     assert min_len <= len(output) <= max_len
     assert output.startswith('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+
+
+def test_escape_to_javascript_attack():
+    # It is possible to run arbitrary javascript code, but it's useless because
+    # of Deno's permissions: https://docs.deno.com/runtime/manual/basics/permissions
+    code = "import pyodide; pyodide.code.run_js(\"Deno.readTextFile('/etc/hostname')\")"
+    assert run(code) == (
+        'PythonError: pyodide.ffi.JsException: PermissionDenied:'
+        ' Requires read access to "/etc/hostname", run again with the --allow-read flag'
+    )
 
 
 def test_no_network_access(monkeypatch):
