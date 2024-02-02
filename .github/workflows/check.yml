@@ -34,4 +34,4 @@ jobs:
     - run: pip install -r requirements.txt
     - run: pip install -r requirements-dev.txt
     - run: ./download-deno.sh
-    - run: python3 -m pytest --capture=no -v
+    - run: python3 -m pytest -v

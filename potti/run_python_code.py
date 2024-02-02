@@ -14,11 +14,6 @@ from typing import IO
 
 
 log = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
-h = logging.StreamHandler()
-h.setLevel(logging.DEBUG)
-logging.getLogger().setLevel(logging.DEBUG)
-logging.getLogger().addHandler(h)
 
 
 def set_memory_limit() -> None:
