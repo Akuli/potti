@@ -21,7 +21,7 @@ jobs:
         mypy --strict --platform linux --python-version 3.12 potti
 
   pytest:
-    timeout-minutes: 5
+    timeout-minutes: 10
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
@@ -33,5 +33,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - run: pip install -r requirements.txt
     - run: pip install -r requirements-dev.txt
+    - run: git submodule update --init
     - run: ./download-deno.sh
     - run: python3 -m pytest -v
