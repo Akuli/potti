@@ -72,7 +72,7 @@ try:
         bot.run_forever()
     else:
         # stop when mantaray window is closed
-        bot.run_while(lambda: client_process.poll() is None)
+        bot.run_while(lambda: client_process.poll() is None)  # type: ignore
 finally:
     if server_process is not None:
         server_process.kill()
