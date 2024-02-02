@@ -21,7 +21,7 @@ jobs:
         mypy --strict --platform linux --python-version 3.12 potti
 
   pytest:
-    timeout-minutes: 5
+    timeout-minutes: 10
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
