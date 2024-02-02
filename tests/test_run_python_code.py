@@ -43,3 +43,23 @@ def test_print_ddos_attack():
     output = run("while True: print('a', end='', flush=True)")
     assert min_len <= len(output) <= max_len
     assert output.startswith('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+
+
+def test_no_network_access(monkeypatch):
+    monkeypatch.setattr("potti.run_python_code.MAX_RUN_TIME", 10)
+
+    # No access to plain old sockets. Libraries that use them don't work.
+    assert run('import socket; socket.gethostname()') == 'emscripten'
+    assert "OSError: [Errno 23] Host is unreachable" in run(
+        'import socket; socket.create_connection(("google.com", 80))'
+    )
+    assert "OSError: [Errno 23] Host is unreachable" in run(
+        'import urllib.request; urllib.request.urlopen("http://google.com/")'
+    )
+
+    # If you try to use pyodide's custom thing, there's still permission issue
+    assert run(
+        'import pyodide.http; r = await pyodide.http.pyfetch("https://google.com/")'
+    ) == (
+        'OSError: Requires net access to "google.com", run again with the --allow-net flag'
+    )
