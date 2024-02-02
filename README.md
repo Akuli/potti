@@ -11,7 +11,7 @@ the security of running arbitrary Python code.
 
 The Python code is executed securely but ridiculously
 by using [a javascript runtime](https://deno.com/)
-to run [Pyodide, a Python interpreter compiled as WebAssembly](https://pyodide.org/).
+to run [Pyodide, a Python interpreter compiled into WebAssembly](https://pyodide.org/).
 Pyodide naturally has no access to a real file system, because it's meant to be ran in a web browser.
 Instead, it creates a fake file system and
 crashes with various funny errors when you try to access real operating system functionality.
@@ -26,7 +26,7 @@ crashes with various funny errors when you try to access real operating system f
 Development setup:
 
 ```
-$ python3 - m venv env
+$ python3 -m venv env
 $ source env/bin/activate
 $ pip install -r requirements.txt
 $ pip install -r requirements-dev.txt
