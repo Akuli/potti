@@ -1,7 +1,7 @@
 import logging
 
-from bottelo.irc import IrcBot
-from bottelo.run_python_code import run_python_code
+from potti.irc import IrcBot
+from potti.run_python_code import run_python_code
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -13,12 +13,12 @@ bot = IrcBot(
     host="localhost",
     port=6667,
     use_ssl=False,
-    nick="bottelo",
+    nick="potti",
     channels=["#a"],
 )
 
 
-@bot.command("!py3")
+@bot.command("!py")
 def py3(sender: str, recipient: str, code: str) -> str:
     try:
         output = run_python_code(code)

@@ -202,7 +202,7 @@ def run_python_code(code: str) -> str:
 
 # for quick and dirty testing
 #
-#   $ python3 -m bottelo.run_python_code 'print(1)'
+#   $ python3 -m potti.run_python_code 'print(1)'
 if __name__ == "__main__":
     [code] = sys.argv[1:]
     print(repr(run_python_code(code)))

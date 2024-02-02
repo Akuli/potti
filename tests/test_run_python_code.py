@@ -1,4 +1,4 @@
-from bottelo.run_python_code import run_python_code
+from potti.run_python_code import run_python_code
 
 
 def test_succeeding_codes():
@@ -23,7 +23,7 @@ def test_dummy_fs():
 
 def test_memory_ddos_attack(monkeypatch):
     # Currently this times out, but let's see what happens if we have faster CPU
-    monkeypatch.setattr("bottelo.run_python_code.MAX_RUN_TIME", 10)
+    monkeypatch.setattr("potti.run_python_code.MAX_RUN_TIME", 10)
     assert run_python_code("print('a' * 1_000_000_000)") == "MemoryError"
 
 
