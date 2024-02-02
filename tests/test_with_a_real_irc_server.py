@@ -1,5 +1,6 @@
 # Integration Test sounds fancy :)
 
+import os
 import subprocess
 import time
 import sys
@@ -10,6 +11,9 @@ import pytest
 
 @pytest.fixture
 def server():
+    if not os.path.isfile("MantaTail/server.py"):
+        raise RuntimeError("you need to run 'git submodule update --init' before tests")
+
     process = subprocess.Popen([sys.executable, "server.py"], cwd="MantaTail")
 
     # Wait for server to start
