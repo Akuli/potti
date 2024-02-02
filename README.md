@@ -56,7 +56,7 @@ I was a beginner programmer when I joined, and now I'm the person who helps othe
 (If you want to talk on `##learnpython`, you can run [Mantaray](https://github.com/Akuli/mantaray).
 It joins `##learnpython` by default.)
 
-On the `##learnpython` channel, there is already an instance of [pbot](https://github.com/raylu/pbot/),
+On the `##learnpython` channel, there was already an instance of [pbot](https://github.com/raylu/pbot/),
 which is another bot that runs people's code.
 It uses some kind of sandbox thing to limit resources and chroot to a dummy file system.
 
