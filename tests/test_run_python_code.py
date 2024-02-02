@@ -33,9 +33,9 @@ def test_infinite_loop_ddos_attack():
 
 def test_print_ddos_attack():
     output = run("while True: print('a')")
-    assert len(output) <= 2000
+    assert 1000 <= len(output) <= 1100
     assert output.startswith('a a a a a a a a a a a a a a a ')
 
     output = run("while True: print('a', end='', flush=True)")
-    assert len(output) <= 2000
+    assert 1000 <= len(output) <= 1100
     assert output.startswith('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')

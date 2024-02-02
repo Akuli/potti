@@ -31,7 +31,7 @@ def kill_process(process: subprocess.Popen[bytes]) -> None:
 # This will wait max 0.1sec for data to become available.
 def read_available_data(file: IO[bytes]) -> bytes:
     if select.select([file], [], [], 0.1)[0]:
-        return file.read1(1000)  # type: ignore
+        return file.read1(100)  # type: ignore
     else:
         return b""
 
