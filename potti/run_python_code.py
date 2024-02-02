@@ -31,13 +31,9 @@ def kill_process(process: subprocess.Popen) -> None:
 # output them as needed.
 class RunnerPool:
     def __init__(self) -> None:
+        self.project_root = Path(__file__).parent.parent
         self.queue: queue.Queue[subprocess.Popen] = queue.Queue(maxsize=3)
         self.stopping = False
-
-        self.project_root = Path(__file__).parent.parent
-        self.deno_cache = self.project_root / "deno" / "cache"
-        self.deno_cache.mkdir(exist_ok=True)
-
         self.thread = threading.Thread(target=self.spawn_more_until_stopped, daemon=True)
         self.thread.start()
 
@@ -45,18 +41,12 @@ class RunnerPool:
         process = subprocess.Popen(
             # --allow-read lets pyodide read Python library files.
             # This is safe, because pyodide has dummy file system anyway. See tests.
-            #
-            # To limit output, we can't use "head" as it results in everything
-            # getting stuck. It outputs nothing until you feed it as many bytes
-            # as it expects. We can't limit the output in Python because the
-            # .communicate() method doesn't allow it, and I don't want to write
-            # my own .communicate() that sucks at handling edge cases.
             ["deno/deno", "run", "--allow-read", "run_pyodide.js"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=self.project_root,
-            env=dict(os.environ) | {"DENO_DIR": str(self.deno_cache)},
+            env=dict(os.environ) | {"DENO_DIR": str(self.project_root / "deno" / "cache")},
             preexec_fn=set_memory_limit,
         )
 
