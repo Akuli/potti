@@ -1,18 +1,16 @@
 import logging
 import socket
 import ssl
-import traceback
 from typing import Union, TypeVar, Callable
 
 import certifi
 
 
 log = logging.getLogger(__name__)
-
 _Socket = Union[socket.socket, ssl.SSLSocket]
 
 
-# This function was copied from my Mantaray project.
+# This function was mostly copied from my Mantaray project.
 # If there's a problem with it, you probably need to update Mantaray too.
 def create_connection(host: str, port: int, use_ssl: bool) -> _Socket:
     sock: _Socket

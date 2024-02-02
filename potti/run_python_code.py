@@ -86,11 +86,6 @@ class RunnerPool:
         return process
 
     def spawn_more_until_stopped(self) -> None:
-        project_root = Path(__file__).parent.parent
-
-        deno_cache = project_root / "deno" / "cache"
-        deno_cache.mkdir(exist_ok=True)
-
         while not self.stopping:
             start = time.monotonic()
             try:
@@ -141,8 +136,8 @@ class RunnerPool:
             return process
 
 
-pool = RunnerPool()
-atexit.register(pool.stop)
+global_pool = RunnerPool()
+atexit.register(global_pool.stop)
 
 
 def set_non_blocking(file: IO[bytes]) -> None:
@@ -159,9 +154,9 @@ MAX_RUN_TIME = 0.5
 #
 # To run webassembly, I stole some javascript code from pyodide's tests.
 # I am running it with deno because they run it with deno.
-def run_python_code(code: str) -> str:
+def run(code: str) -> str:
     log.info(f"running {code!r}")
-    process = pool.get_a_process()
+    process = global_pool.get_a_process()
     log.debug(f"got runner pid={process.pid}")
 
     try:
@@ -202,4 +197,4 @@ def run_python_code(code: str) -> str:
 #   $ python3 -m potti.run_python_code 'print(1)'
 if __name__ == "__main__":
     [code] = sys.argv[1:]
-    print(repr(run_python_code(code)))
+    print(repr(run(code)))

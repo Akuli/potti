@@ -1,7 +1,7 @@
 import logging
 
 from potti.irc import IrcBot
-from potti.run_python_code import run_python_code
+from potti import run_python_code
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -22,7 +22,7 @@ bot = IrcBot(
 @bot.command("!py")
 def py3(sender: str, recipient: str, code: str) -> str:
     try:
-        output = run_python_code(code)
+        output = run_python_code.run(code)
         if len(output) > 200:
             output = output[:200] + " [output truncated]"
     except Exception:

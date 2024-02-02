@@ -52,7 +52,9 @@ $ mypy potti
 I've been ocassionally on an IRC channel named `##learnpython` for about 10 years now.
 It is a small community of programmers, and it has gotten smaller over time,
 but I still talk there regularly.
-I was a beginner when I joined, and now I'm the person who helps others there the most.
+I was a beginner programmer when I joined, and now I'm the person who helps others there the most.
+(If you want to talk on `##learnpython`, you can run [Mantaray](https://github.com/Akuli/mantaray).
+It joins `##learnpython` by default.)
 
 On the `##learnpython` channel, there is already an instance of [pbot](https://github.com/raylu/pbot/),
 which is another bot that runs people's code.
