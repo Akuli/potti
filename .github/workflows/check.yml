@@ -6,6 +6,7 @@ on:
 
 jobs:
   mypy:
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -20,7 +21,7 @@ jobs:
         mypy --strict --platform linux --python-version 3.12 potti
 
   pytest:
-    timeout-minutes: 10
+    timeout-minutes: 5
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
