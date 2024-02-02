@@ -2,14 +2,14 @@
 // https://github.com/pyodide/pyodide/blob/3e6d17147b60423b729f1b4920032e11185dfc42/src/test-deno/smoke-test.ts
 
 import pyodideModule from "npm:pyodide@0.25.0/pyodide.js";
-const { loadPyodide, toPy } = pyodideModule;
+const { loadPyodide } = pyodideModule;
 
 
 const pyodide = await loadPyodide();  // This is really really slow.
-console.log("Loaded");
+console.log("Loaded");  // Used to detect when loadPyodide() is done
 
 // Read python code after loading pyodide to work around loading slowness.
-// This way, we can prepare a runners when idle, and have it sit here until it's needed.
+// This way, we can prepare a runner when idle, and have it sit here until it's needed.
 const pythonCode = await Deno.readTextFile("/dev/stdin");
 
 try {
