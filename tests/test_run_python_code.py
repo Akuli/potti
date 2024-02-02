@@ -54,7 +54,13 @@ def test_no_network_access(monkeypatch):
         'import socket; socket.create_connection(("google.com", 80))'
     )
     assert "OSError: [Errno 23] Host is unreachable" in run(
+        'import socket; socket.create_connection(("127.0.0.1", 80))'
+    )
+    assert "OSError: [Errno 23] Host is unreachable" in run(
         'import urllib.request; urllib.request.urlopen("http://google.com/")'
+    )
+    assert "OSError: [Errno 23] Host is unreachable" in run(
+        'import urllib.request; urllib.request.urlopen("http://127.0.0.1/")'
     )
 
     # If you try to use pyodide's custom thing, there's still permission issue
