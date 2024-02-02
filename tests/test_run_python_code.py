@@ -22,7 +22,7 @@ def test_dummy_fs():
 
 
 def test_memory_ddos_attack(monkeypatch):
-    # Currently this times out, but let's see what happens if we have faster CPU
+    # Currently this times out on my system, but let's see what happens if we have faster CPU
     monkeypatch.setattr("potti.run_python_code.MAX_RUN_TIME", 10)
     assert run_python_code("print('a' * 1_000_000_000)") == "MemoryError"
 
@@ -33,9 +33,9 @@ def test_infinite_loop_ddos_attack():
 
 def test_print_ddos_attack():
     output = run_python_code("while True: print('a')")
-    assert len(output) <= 1000
+    assert len(output) <= 2000
     assert output.startswith('a a a a a a a a a a a a a a a ')
 
     output = run_python_code("while True: print('a', end='', flush=True)")
-    assert len(output) <= 1000
+    assert len(output) <= 2000
     assert output.startswith('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')

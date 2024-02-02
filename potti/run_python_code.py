@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 def set_memory_limit() -> None:
     # https://gist.github.com/s3rvac/f97d6cbdfdb15c0a32e7e941f7f4a3fa
-    max_mem = 200_000_000
+    max_mem = 500_000_000
     resource.setrlimit(resource.RLIMIT_DATA, (max_mem, max_mem))
 
 
@@ -31,7 +31,7 @@ def kill_process(process: subprocess.Popen[bytes]) -> None:
 # This will wait max 0.1sec for data to become available.
 def read_available_data(file: IO[bytes]) -> bytes:
     if select.select([file], [], [], 0.1)[0]:
-        return file.read1()  # type: ignore
+        return file.read1(1000)  # type: ignore
     else:
         return b""
 
