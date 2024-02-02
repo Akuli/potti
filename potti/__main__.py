@@ -40,17 +40,18 @@ log = logging.getLogger(__name__)
 parser = argparse.ArgumentParser(prog="python3 -m potti")
 parser.add_argument("--launch-server", action="store_true", help="whether to run Mantaray (GUI)")
 parser.add_argument("--launch-client", action="store_true", help="whether to run MantaTail (local server)")
+parser.add_argument("--prod", action="store_true", help="connect to Libera, not locally")
 args = parser.parse_args()
+assert not (args.prod and (args.launch_server or args.launch_client))
 
 server_process = start_mantatail() if args.launch_server else None
 client_process = start_mantaray() if args.launch_client else None
 
 bot = IrcBot(
-    host="localhost",
-    port=6667,
-    use_ssl=False,
+    host="irc.libera.chat" if args.prod else "localhost",
+    use_ssl=args.prod,
     nick="potti",
-    channels=["#autojoin"],
+    channels=["##learnpython", "##learnmath"] if args.prod else ["#autojoin"],
     realname="https://github.com/Akuli/potti",
 )
 

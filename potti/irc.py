@@ -51,12 +51,14 @@ class IrcBot:
         nick: str,
         channels: list[str],
         *,
-        port: int = 6697,
+        port: int | None = None,
         use_ssl: bool = True,
         user: str | None = None,
         realname: str | None = None,
     ) -> None:
-        self.sock = create_connection(host, port, use_ssl)
+        default_port = 6697 if use_ssl else 6667
+
+        self.sock = create_connection(host, port or default_port, use_ssl)
         self.send(f"NICK {nick}")
         self.send(f"USER {user or nick} 0 * :{realname or nick}")
         self.channels = channels
