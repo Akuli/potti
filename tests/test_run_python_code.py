@@ -51,13 +51,26 @@ def test_print_ddos_attack():
     assert output.startswith('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 
-def test_escape_to_javascript_attack():
+def test_escape_to_javascript_attack(monkeypatch):
+    monkeypatch.setattr("potti.run_python_code.MAX_RUN_TIME", 10)
+
     # It is possible to run arbitrary javascript code, but it's useless because
     # of Deno's permissions: https://docs.deno.com/runtime/manual/basics/permissions
-    code = "import pyodide; pyodide.code.run_js(\"Deno.readTextFile('/etc/hostname')\")"
-    assert run(code) == (
+    def run_js(code):
+        return run(f"import pyodide; pyodide.code.run_js({code!r})")
+
+    assert run_js("Deno.readTextFile('/etc/hostname')") == (
         'PythonError: pyodide.ffi.JsException: PermissionDenied:'
         ' Requires read access to "/etc/hostname", run again with the --allow-read flag'
+    )
+    assert run_js("Deno.readDir('/home')").startswith(
+        '[object Object] error: Uncaught (in promise) PermissionDenied: Requires read access to "/home"'
+    )
+    assert run_js("Deno.run({cmd: ['bash']})") == (
+        'warning: Use of deprecated "Deno.run()" API. This API will be removed in Deno 2.'
+        ' Run again with DENO_VERBOSE_WARNINGS=1 to get more details.'
+        '  pyodide.ffi.JsException: PermissionDenied:'
+        ' Requires run access to "bash", run again with the --allow-run flag'
     )
 
 

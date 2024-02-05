@@ -10,13 +10,20 @@ the security of running arbitrary Python code.
 (If you want, try [my mantaray project](https://github.com/Akuli/mantaray) to get started with IRC.)
 
 The Python code is executed securely but ridiculously
-by using [a javascript runtime](https://deno.com/)
+by using [Deno, a secure-by-default javascript runtime](https://deno.com/),
 to run [Pyodide, a Python interpreter compiled into WebAssembly](https://pyodide.org/).
 Pyodide naturally has no access to a real file system, because it's meant to be ran in a web browser.
 Instead, it creates a fake file system and
 crashes with various funny errors when you try to access real operating system functionality.
 
 ![screenshot2](screenshot-denied.png)
+
+However, it is possible to escape Pyodide and run arbitrary javascript code
+with the `pyodide.code.run_js()` function.
+It doesn't matter, because [Deno is secure by default](https://docs.deno.com/runtime/manual/basics/permissions),
+and you will errors from Deno if you try to do stuff in javascript:
+
+![screenshot2](screenshot-denied-deno.png)
 
 
 ## Setup

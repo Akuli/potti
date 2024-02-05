@@ -1,3 +1,4 @@
+import re
 import sys
 import fcntl
 import atexit
@@ -185,6 +186,9 @@ def run(code: str) -> str:
             if time.monotonic() > end:
                 return "timed out"
             output += read_available_data(process.stdout)
+
+        # Remove ANSI color codes. They show up in some Deno error messages.
+        output = re.sub(rb'\x1b\[\d+m', b'', output)
 
         return output.decode("utf-8", errors="replace").replace('\n', ' ').strip()
 
