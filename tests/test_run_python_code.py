@@ -1,7 +1,7 @@
 from potti.run_python_code import run
 
 
-def test_succeeding_codes():
+def test_basic():
     assert run("'a' + 'b'") == 'ab'  # TODO: "'ab'" would be better
     assert run("1 + 2") == '3'
     assert run("[1] + [2]") == '[1, 2]'
@@ -9,10 +9,14 @@ def test_succeeding_codes():
     assert run("3 + 4j") == '(3+4j)'
     assert run("print('x'); print('y'); 'z'") == 'x y z'
 
+
+def test_stdlib_modules():
     # Built-in module
+    assert run("import math; math") == "<module 'math' (built-in)>"
     assert run("from math import cos, pi; cos(pi)") == "-1"
 
     # Standard-library module
+    assert run("import logging; logging") == "<module 'logging' from '/lib/python311.zip/logging/__init__.py'>"
     assert run("import logging; logging.getLogger('x').warning('test')") == "WARNING:x:test"
 
 
