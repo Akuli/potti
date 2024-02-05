@@ -1,3 +1,4 @@
+import re
 import sys
 import fcntl
 import atexit
@@ -48,9 +49,9 @@ class RunnerPool:
 
     def spawn_one_new_runner(self) -> subprocess.Popen[bytes]:
         process = subprocess.Popen(
-            # --allow-read lets pyodide read Python library files.
-            # This is safe, because pyodide has dummy file system anyway. See tests.
-            ["deno/deno", "run", "--allow-read", "run_pyodide.js"],
+            # We need to be careful with permissions, because it's possible to
+            # run arbitrary javascript code. See tests.
+            ["deno/deno", "run", "--allow-read=deno/cache/npm/registry.npmjs.org/pyodide,run_pyodide.js,/dev/stdin", "run_pyodide.js"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -185,6 +186,9 @@ def run(code: str) -> str:
             if time.monotonic() > end:
                 return "timed out"
             output += read_available_data(process.stdout)
+
+        # Remove ANSI color codes. They show up in some Deno error messages.
+        output = re.sub(rb'\x1b\[\d+m', b'', output)
 
         return output.decode("utf-8", errors="replace").replace('\n', ' ').strip()
 
