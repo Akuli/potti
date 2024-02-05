@@ -16,14 +16,14 @@ Pyodide naturally has no access to a real file system, because it's meant to be 
 Instead, it creates a fake file system and
 crashes with various funny errors when you try to access real operating system functionality.
 
-![screenshot2](screenshot-denied.png)
+![screenshot2](screenshot-denied-pyodide.png)
 
 However, it is possible to escape Pyodide and run arbitrary javascript code
 with the `pyodide.code.run_js()` function.
 It doesn't matter, because [Deno is secure by default](https://docs.deno.com/runtime/manual/basics/permissions),
 and you will errors from Deno if you try to do stuff in javascript:
 
-![screenshot2](screenshot-denied-deno.png)
+![screenshot3](screenshot-denied-deno.png)
 
 
 ## Setup
