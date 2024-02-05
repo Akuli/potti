@@ -17,7 +17,7 @@ def test_stdlib_modules():
 
     # Standard-library module
     assert run("import logging; logging") == "<module 'logging' from '/lib/python311.zip/logging/__init__.py'>"
-    assert run("import logging; logging.getLogger('x').warning('test')") == "WARNING:x:test"
+    assert run("import logging; logging.getLogger('x').warning('test')") == "test"
 
 
 def test_errors():
