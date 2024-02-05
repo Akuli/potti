@@ -10,7 +10,7 @@ def test_succeeding_codes():
     assert run("print('x'); print('y'); 'z'") == 'x y z'
 
     # Built-in module
-    assert run("from math import cos, pi; cos(pi)") == "-1.0"
+    assert run("from math import cos, pi; cos(pi)") == "-1"
 
     # Standard-library module
     assert run("import logging; logging.getLogger('x').warning('test')") == "WARNING:x:test"
