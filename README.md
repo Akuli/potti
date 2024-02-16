@@ -33,7 +33,7 @@ and you will errors from Deno if you try to do stuff in javascript:
 Development setup:
 
 ```
-$ git submodule update
+$ git submodule update --init
 $ python3 -m venv env
 $ source env/bin/activate
 $ pip install -r requirements.txt
