@@ -1,3 +1,4 @@
+import re
 import logging
 import socket
 import ssl
@@ -40,7 +41,7 @@ def split_line(line: str) -> list[str]:
         return line.split()
 
 
-_CommandT = TypeVar("_CommandT", bound=Callable[[str, str, str], str | None])
+_CommandT = TypeVar("_CommandT", bound=Callable[[str, str, re.Match[str]], str | None])
 
 
 class IrcBot:
@@ -62,7 +63,7 @@ class IrcBot:
         self.send(f"NICK {nick}")
         self.send(f"USER {user or nick} 0 * :{realname or nick}")
         self.channels = channels
-        self.commands: list[tuple[str, Callable[[str, str, str], str | None]]] = []
+        self.commands: list[tuple[str, Callable[[str, str, re.Match[str]], str | None]]] = []
 
     def send(self, line: str) -> None:
         log.info(f"send: {line}")
@@ -120,10 +121,11 @@ class IrcBot:
             self.handle_privmsg(sender, recipient, message)
 
     def handle_privmsg(self, sender: str, recipient: str, message: str) -> None:
-        for prefix, callback in self.commands:
-            if message.startswith(f"{prefix} "):
+        for regex, callback in self.commands:
+            match = re.fullmatch(regex, message)
+            if match is not None:
                 try:
-                    response = callback(sender, recipient, message[len(prefix):].strip())
+                    response = callback(sender, recipient, match)
                 except Exception:
                     log.exception(f"error when handling message {message!r} ({sender} --> {recipient})")
                     return
@@ -140,9 +142,9 @@ class IrcBot:
 
                 return
 
-    def command(self, prefix: str) -> Callable[[_CommandT], _CommandT]:
+    def command(self, regex: str) -> Callable[[_CommandT], _CommandT]:
         def actually_register(callback: _CommandT) -> _CommandT:
-            self.commands.append((prefix, callback))
+            self.commands.append((regex, callback))
             return callback
 
         return actually_register

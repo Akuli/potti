@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import re
 import subprocess
 import sys
 import socket
@@ -56,8 +57,9 @@ bot = IrcBot(
 )
 
 
-@bot.command("!py")
-def py_command(sender: str, recipient: str, code: str) -> str:
+@bot.command(r"!py (.*)")
+def py_command(sender: str, recipient: str, match: re.Match[str]) -> str:
+    code = match.group(1)
     try:
         output = run_python_code.run(code)
         if len(output) > 200:
@@ -66,6 +68,22 @@ def py_command(sender: str, recipient: str, code: str) -> str:
         log.exception(f"running code failed: {code!r}")
         output = "error :("
     return f"{sender}: {output}"
+
+
+# Examples:
+#   potti: hello :)
+#   hello potti !!!
+#   hello potti :D
+@bot.command(r"(hello|hi+) +potti\b.*")
+@bot.command(r"potti: *(hello|hi+)\b.*")
+def hello_command(sender: str, recipient: str, match: re.Match[str]) -> str:
+    return f"Hello {sender} :)"
+
+
+# Reply to unknown messages with beep boop
+@bot.command(r"potti:.*")
+def unknown_message_for_me_handler(sender: str, recipient: str, match: re.Match[str]) -> str:
+    return f"{sender}: I am a bot. Beep boop."
 
 
 try:
