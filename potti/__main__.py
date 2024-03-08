@@ -70,8 +70,8 @@ def py_command(sender: str, recipient: str, match: re.Match[str]) -> str:
     return f"{sender}: {output}"
 
 
-@bot.command(r"(hello|hi+) +potti\b.*")
-@bot.command(r"potti: *(hello|hi+)\b.*")
+@bot.command(r"(hello|hi+)[ ,]+potti\b.*")
+@bot.command(r"potti[:,] *(hello|hi+)\b.*")
 def hello_command(sender: str, recipient: str, match: re.Match[str]) -> str:
     """Respond to greetings.
 
