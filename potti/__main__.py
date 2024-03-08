@@ -71,7 +71,7 @@ def py_command(sender: str, recipient: str, match: re.Match[str]) -> str:
 
 
 @bot.command(r"(hello|hi+)[ ,]+potti\b.*")
-@bot.command(r"potti[:,] *(hello|hi+)\b.*")
+@bot.command(r"potti[:,]? *(hello|hi+)\b.*")
 def hello_command(sender: str, recipient: str, match: re.Match[str]) -> str:
     """Respond to greetings.
 
@@ -84,7 +84,7 @@ def hello_command(sender: str, recipient: str, match: re.Match[str]) -> str:
     return f"Hello {sender} :)"
 
 
-@bot.command(r"potti[:,].*")
+@bot.command(r"potti\b.*")
 def unknown_message_for_me_handler(sender: str, recipient: str, match: re.Match[str]) -> str:
     """Reply to unknown messages directed at the bot with beep boop."""
     return f"{sender}: I am a bot. Beep boop."
