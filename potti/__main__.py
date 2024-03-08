@@ -5,9 +5,10 @@ import re
 import subprocess
 import sys
 import socket
+import string
 
 from potti.irc import IrcBot
-from potti import run_python_code
+from potti import run_python_code, ml
 
 
 def start_mantaray() -> subprocess.Popen[bytes]:
@@ -84,10 +85,11 @@ def hello_command(sender: str, recipient: str, match: re.Match[str]) -> str:
     return f"Hello {sender} :)"
 
 
-@bot.command(r"potti\b.*")
+@bot.command(r"potti\b(.*)")
 def unknown_message_for_me_handler(sender: str, recipient: str, match: re.Match[str]) -> str:
-    """Reply to unknown messages directed at the bot with beep boop."""
-    return f"{sender}: I am a bot. Beep boop."
+    """Reply to unknown messages directed at the bot with AI gibberish."""
+    message = match.group(1).strip(string.punctuation + string.whitespace)
+    return f"{sender}: {ml.predict_next_message(message)}"
 
 
 try:
