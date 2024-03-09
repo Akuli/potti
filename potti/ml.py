@@ -4,7 +4,7 @@ import more_itertools
 
 
 def get_training_data(include_end_markers):
-    with open("/home/akuli/.config/mantaray/logs/irc_libera_chat/##learnpython.log") as file:
+    with open("/tmp/##learnpython.log") as file:
         for line in file:
             try:
                 timestamp, sender, message = line.split('\t')
