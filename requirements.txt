@@ -1,1 +1,2 @@
 certifi
+more-itertools==10.2.0
