@@ -57,9 +57,9 @@ bot = IrcBot(
 )
 
 
-@bot.command(r"!py (.*)")
+@bot.command(r"!py(thon)?3? (.*)")
 def py_command(sender: str, recipient: str, match: re.Match[str]) -> str:
-    code = match.group(1)
+    code = match.group(2)
     try:
         output = run_python_code.run(code)
         if len(output) > 200:
